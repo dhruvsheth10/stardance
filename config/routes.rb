@@ -38,10 +38,11 @@
 #                                     dev_login_auto GET    /dev_login(.:format)                                                                              sessions#dev_login
 #                                          dev_login GET    /dev_login/:id(.:format)                                                                          sessions#dev_login
 #                                               home GET    /home(.:format)                                                                                   home#index
+#                                           commands GET    /commands(.:format)                                                                               commands#index
 #                                        leaderboard GET    /leaderboard(.:format)                                                                            leaderboard#index
 #                                         my_balance GET    /my/balance(.:format)                                                                             my#balance
 #                                        my_settings PATCH  /my/settings(.:format)                                                                            my#update_settings
-#                                    my_cookie_click POST   /my/cookie_click(.:format)                                                                        my#cookie_click
+#                                  my_stardust_click POST   /my/stardust_click(.:format)                                                                      my#stardust_click
 #                                      dismiss_thing POST   /my/dismiss_thing(.:format)                                                                       my#dismiss_thing
 #                                            my_club DELETE /my/club(.:format)                                                                                my#unlink_club
 #                                    my_achievements GET    /my/achievements(.:format)                                                                        achievements#index
@@ -183,8 +184,7 @@
 #                                unmark_fire_project POST   /projects/:id/unmark_fire(.:format)                                                               projects#unmark_fire
 #                                     follow_project POST   /projects/:id/follow(.:format)                                                                    projects#follow
 #                                   unfollow_project DELETE /projects/:id/unfollow(.:format)                                                                  projects#unfollow
-#                                           projects GET    /projects(.:format)                                                                               projects#index
-#                                                    POST   /projects(.:format)                                                                               projects#create
+#                                           projects POST   /projects(.:format)                                                                               projects#create
 #                                        new_project GET    /projects/new(.:format)                                                                           projects#new
 #                                       edit_project GET    /projects/:id/edit(.:format)                                                                      projects#edit
 #                                            project GET    /projects/:id(.:format)                                                                           projects#show
@@ -196,8 +196,18 @@
 #                                    devlog_comments POST   /devlogs/:devlog_id/comments(.:format)                                                            comments#create
 #                                     devlog_comment DELETE /devlogs/:devlog_id/comments/:id(.:format)                                                        comments#destroy
 #                                      user_og_image GET    /users/:user_id/og_image(.:format)                                                                users/og_images#show {format: :png}
+#                                        user_follow DELETE /users/:user_id/follow(.:format)                                                                  follows#destroy
+#                                                    POST   /users/:user_id/follow(.:format)                                                                  follows#create
+#                                     followers_user GET    /users/:id/followers(.:format)                                                                    users#followers
+#                                     following_user GET    /users/:id/following(.:format)                                                                    users#following
 #                                               user GET    /users/:id(.:format)                                                                              users#show
+#                                                    PATCH  /users/:id(.:format)                                                                              users#update
+#                                                    PUT    /users/:id(.:format)                                                                              users#update
+#                                       search_users GET    /search/users(.:format)                                                                           search#users
+#                                    search_projects GET    /search/projects(.:format)                                                                        search#projects
 #                                                edu GET    /edu(.:format)                                                                                    landing#edu
+#                                             guides GET    /guides(.:format)                                                                                 guides#index
+#                                              guide GET    /guides/:id(.:format)                                                                             guides#show
 #                                                    GET    /:ref(.:format)                                                                                   landing#index {ref: /[a-z0-9][a-z0-9_-]{0,63}/}
 #                                  rails_performance        /rails/performance                                                                                RailsPerformance::Engine
 #                   turbo_recede_historical_location GET    /recede_historical_location(.:format)                                                             turbo/native/navigation#recede

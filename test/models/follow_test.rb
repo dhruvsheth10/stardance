@@ -1,3 +1,24 @@
+# == Schema Information
+#
+# Table name: follows
+#
+#  id          :bigint           not null, primary key
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  followed_id :bigint           not null
+#  follower_id :bigint           not null
+#
+# Indexes
+#
+#  index_follows_on_followed_id                  (followed_id)
+#  index_follows_on_follower_id                  (follower_id)
+#  index_follows_on_follower_id_and_followed_id  (follower_id,followed_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (followed_id => users.id)
+#  fk_rails_...  (follower_id => users.id)
+#
 require "test_helper"
 
 class FollowTest < ActiveSupport::TestCase
@@ -27,14 +48,14 @@ class FollowTest < ActiveSupport::TestCase
   end
 
   test "fires Slack DM to followed user when notifications enabled" do
-    @bob.update!(send_notifications_for_new_followers: true)
+    @bob.preference.update!(send_notifications_for_new_followers: true)
     assert_enqueued_with(job: SendSlackDmJob) do
       Follow.create!(follower: @alice, followed: @bob)
     end
   end
 
   test "does not fire Slack DM if followed user opted out" do
-    @bob.update!(send_notifications_for_new_followers: false)
+    @bob.preference.update!(send_notifications_for_new_followers: false)
     assert_no_enqueued_jobs(only: SendSlackDmJob) do
       Follow.create!(follower: @alice, followed: @bob)
     end
