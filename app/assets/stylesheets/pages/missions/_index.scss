@@ -65,7 +65,10 @@
   background: var(--color-space-card, rgba(255, 255, 255, 0.04));
   color: var(--color-space-text);
   text-decoration: none;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
 
   &:hover,
   &:focus-visible {
@@ -145,7 +148,7 @@
   }
 
   &--difficulty-beginner {
-    background: rgba(129, 255, 255, 0.20);
+    background: rgba(129, 255, 255, 0.2);
     color: var(--color-brand-mint, #81ffff);
   }
 

@@ -14,6 +14,5 @@ module Admin
       unlock.destroy!
       redirect_to admin_mission_path(@mission.slug), notice: "Shop unlock removed."
     end
-
   end
 end

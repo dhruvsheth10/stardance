@@ -6,6 +6,24 @@ class ProjectsController < ApplicationController
     authorize @project
 
     @body_class = "app-layout-page"
+    prepare_project_show_context
+  end
+
+  def prepare_project_show_context
+    @members = @project.users.to_a
+    @is_member = current_user && @members.include?(current_user)
+    @can_edit_project = policy(@project).update?
+    @follower_count = @project.project_follows.size
+    @viewer_follow = current_user && @project.project_follows.find_by(user_id: current_user.id)
+    @total_hours = (@project.duration_seconds / 3600.0).round
+
+    if @can_edit_project && current_user
+      @project_times = {}
+      @available_hackatime_projects = current_user.hackatime_projects.order(:name)
+    else
+      @project_times = {}
+      @available_hackatime_projects = User::HackatimeProject.none
+    end
 
     load_posts = -> {
       @project.posts
@@ -37,8 +55,8 @@ class ProjectsController < ApplicationController
 
     ahoy.track "Viewed project", project_id: @project.id
 
-    latest_ship_post = @posts.find { |post| post.postable_type == "Post::ShipEvent" }
-    latest_ship_event = latest_ship_post&.postable
+    @latest_ship_post = @posts.find { |post| post.postable_type == "Post::ShipEvent" }
+    latest_ship_event = @latest_ship_post&.postable
 
     @votes_for_payout = nil
     if current_user.present?
@@ -63,11 +81,15 @@ class ProjectsController < ApplicationController
       end
     end
   end
+  private :prepare_project_show_context
 
   def new
     @project = Project.new
     authorize @project
-    load_project_times
+    @missions = Mission.available
+                       .includes(:icon_attachment, :banner_attachment)
+                       .order(featured_at: :desc)
+                       .limit(8)
   end
 
   def create
@@ -114,10 +136,18 @@ class ProjectsController < ApplicationController
         tutorial_message OnboardingCopy::PROJECT_CREATED_NO_HOURS
       end
 
+      if (slug = params[:mission_slug].presence)
+        mission = Mission.find_by(slug: slug)
+        @project.missions << mission if mission
+      end
+
       redirect_to @project
     else
       flash[:alert] = "Failed to create project: #{@project.errors.full_messages.join(', ')}"
-      load_project_times
+      @missions = Mission.available
+                         .includes(:icon_attachment, :banner_attachment)
+                         .order(featured_at: :desc)
+                         .limit(8)
       render :new, status: :unprocessable_entity
     end
   end
@@ -473,6 +503,10 @@ class ProjectsController < ApplicationController
       @devlogs_for_ship = @devlogs_for_ship.where("posts.created_at > ?", @last_ship.created_at) if @last_ship
       @step = 2
       render "projects/ships/new", status: :unprocessable_entity
+    elsif params[:inline_project_show].present?
+      @body_class = "app-layout-page"
+      prepare_project_show_context
+      render :show, status: :unprocessable_entity
     else
       render :edit, status: :unprocessable_entity
     end

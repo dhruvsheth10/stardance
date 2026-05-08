@@ -22,7 +22,7 @@
       <% end %>
     </ol>
     <%= form_with url: admin_mission_steps_path(@mission.slug), method: :post, local: true do %>
-      <label>Title <%= text_field_tag "mission_step[title]", nil, required: true %></label>
+      <label>Title <%= text_field_tag "mission_step[title]", nil, required: true, autocomplete: "off" %></label>
       <label>Body <%= text_area_tag "mission_step[body]", nil, rows: 3 %></label>
       <%= submit_tag "Add step", class: "btn btn--green btn--sm" %>
     <% end %>
@@ -57,7 +57,7 @@
       <% end %>
     </ul>
     <%= form_with url: admin_mission_memberships_path(@mission.slug), method: :post, local: true do %>
-      <label>User ID or Slack ID <%= text_field_tag "mission_membership[user_id]", nil, required: true %></label>
+      <label>User ID or Slack ID <%= text_field_tag "mission_membership[user_id]", nil, required: true, autocomplete: "off" %></label>
       <%= select_tag "mission_membership[role]", options_for_select(Mission::Membership.roles.keys.map { |r| [ r.titleize, r ] }) %>
       <%= submit_tag "Add member", class: "btn btn--green btn--sm" %>
     <% end %>
