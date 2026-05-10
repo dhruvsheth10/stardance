@@ -32,11 +32,10 @@ module OgImage
     private
 
     def render_placeholder
-      r, g, b = hex_to_rgb("#0d0a26")
-      @image = Vips::Image.black(WIDTH, HEIGHT).new_from_image([ r, g, b ]).cast(:uchar)
-      draw_text(
+      create_stardance_canvas
+      draw_glowing_text(
         truncate_text(@mission.name, 40),
-        x: 0, y: 0, size: 96, color: "#ffffff", gravity: "Center"
+        x: 0, y: 0, size: 96, color: "#fffcf4", glow_color: "#81ffff", gravity: "Center", glow_radius: 10, glow_opacity: 0.4
       )
     end
 

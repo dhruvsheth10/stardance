@@ -153,6 +153,74 @@ module OgImage
       Rails.logger.warn("OgImage: Failed to place image: #{e.message}")
     end
 
+    def create_stardance_canvas(
+      bg_color: "#08061e",
+      card_color: "#120b26",
+      inset: 26,
+      card_radius: 42
+    )
+      br, bg, bb = hex_to_rgb(bg_color)
+      cr, cg, cb = hex_to_rgb(card_color)
+
+      canvas = solid_rgba(WIDTH, HEIGHT, br, bg, bb)
+
+      cw = WIDTH - inset * 2
+      ch = HEIGHT - inset * 2
+      card_mask = rounded_rect_mask(cw, ch, card_radius)
+      card = solid_rgba(cw, ch, cr, cg, cb)
+      card = card.extract_band(0, n: 3).bandjoin(card_mask)
+      canvas = canvas.composite(card, :over, x: [ inset ], y: [ inset ])
+
+      nebula_path = Rails.root.join("app", "assets", "images", "landing", "how-this-works", "nebula-bg.png").to_s
+      if File.exist?(nebula_path)
+        nebula = Vips::Image.new_from_file(nebula_path)
+        nebula = nebula.resize(WIDTH.to_f / nebula.width, vscale: HEIGHT.to_f / nebula.height)
+        nebula = ensure_four_bands(nebula)
+        neb_rgb = nebula.extract_band(0, n: 3)
+        neb_alpha = nebula.extract_band(3)
+        dimmed_alpha = (neb_alpha * 0.3).cast(:uchar)
+        nebula = neb_rgb.bandjoin(dimmed_alpha).copy(interpretation: :srgb)
+        canvas = canvas.composite(nebula, :over, x: [ 0 ], y: [ 0 ])
+      end
+
+      @image = canvas
+    end
+
+    def draw_glowing_text(text, x:, y:, size: 48, color: "#ffffff", glow_color: nil, gravity: "NorthWest", glow_radius: 8, glow_opacity: 0.5)
+      glow_color ||= color
+      gr, gg, gb = hex_to_rgb(glow_color)
+
+      text_img = Vips::Image.text(text.to_s, font: "#{font_name} #{size}", dpi: 72)
+      w, h = text_img.width, text_img.height
+
+      pad = glow_radius * 3
+      padded_w = w + pad * 2
+      padded_h = h + pad * 2
+      glow_base = Vips::Image.black(padded_w, padded_h).cast(:uchar)
+      glow_base = glow_base.composite(text_img, :over, x: [ pad ], y: [ pad ]).extract_band(0)
+      glow_mask = glow_base.gaussblur(glow_radius)
+      glow_mask = (glow_mask * glow_opacity).cast(:uchar)
+
+      glow_layer = solid_rgba(padded_w, padded_h, gr, gg, gb).extract_band(0, n: 3)
+      glow_layer = glow_layer.bandjoin(glow_mask).copy(interpretation: :srgb)
+
+      tx, ty = apply_gravity(gravity, x - pad, y - pad, padded_w, padded_h)
+      @image = image.composite(glow_layer, :over, x: [ tx ], y: [ ty ])
+
+      draw_text(text, x: x, y: y, size: size, color: color, gravity: gravity)
+    end
+
+    def draw_glowing_multiline_text(text, x:, y:, size: 48, color: "#ffffff", glow_color: nil, line_height: 1.3, max_chars: 35, max_lines: 3, glow_radius: 8, glow_opacity: 0.5)
+      lines = wrap_text(text, max_chars).take(max_lines)
+      spacing = (size * line_height).to_i
+
+      lines.each_with_index do |line, index|
+        draw_glowing_text(line, x: x, y: y + (index * spacing), size: size, color: color, glow_color: glow_color, glow_radius: glow_radius, glow_opacity: glow_opacity)
+      end
+
+      lines.size
+    end
+
     def font_name
       @font_name ||= begin
         source = Rails.root.join("app", "assets", "fonts", "Roboto.ttf").to_s
@@ -163,6 +231,19 @@ module OgImage
     end
 
     private
+
+    def ensure_four_bands(img)
+      if img.bands == 3
+        full_alpha = Vips::Image.black(img.width, img.height).new_from_image(255).cast(:uchar)
+        img.bandjoin(full_alpha)
+      elsif img.bands == 1
+        rgb = img.bandjoin([ img, img ])
+        full_alpha = Vips::Image.black(img.width, img.height).new_from_image(255).cast(:uchar)
+        rgb.bandjoin(full_alpha)
+      else
+        img
+      end
+    end
 
     def solid_rgba(w, h, r, g, b, a = 255)
       Vips::Image.new_from_memory(

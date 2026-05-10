@@ -1,6 +1,9 @@
 module OgImage
   class IndexPage < Base
-    LOGO_PATH = Rails.root.join("app", "assets", "images", "landing", "hero", "drawing.png").to_s
+    LOGO_PATH = Rails.root.join("app", "assets", "images", "landing", "header", "stardance-logo.png").to_s
+    STAR_CHARACTER_PATH = Rails.root.join("app", "assets", "images", "landing", "hero", "star-character.png").to_s
+    EARTH_PATH = Rails.root.join("app", "assets", "images", "landing", "hero", "earth.png").to_s
+    STREAK_PATH = Rails.root.join("app", "assets", "images", "landing", "how-this-works", "colorful-streak.png").to_s
 
     def initialize(title: nil, subtitle: nil)
       super()
@@ -9,16 +12,39 @@ module OgImage
     end
 
     def render
-      create_dark_canvas
+      create_stardance_canvas
+      place_streak
+      place_earth
       place_logo
+      place_star_character
       draw_title if @title.present?
       draw_subtitle if @subtitle.present?
     end
 
     private
 
-    def create_dark_canvas
-      create_patterned_canvas
+    def place_streak
+      return unless File.exist?(STREAK_PATH)
+
+      place_image(
+        STREAK_PATH,
+        x: -100, y: -80,
+        width: 900, height: 500,
+        gravity: "NorthWest",
+        cover: false
+      )
+    end
+
+    def place_earth
+      return unless File.exist?(EARTH_PATH)
+
+      place_image(
+        EARTH_PATH,
+        x: -40, y: -60,
+        width: 260, height: 260,
+        gravity: "SouthWest",
+        cover: false
+      )
     end
 
     def place_logo
@@ -26,21 +52,36 @@ module OgImage
 
       place_image(
         LOGO_PATH,
-        x: 0, y: 80,
-        width: 340, height: 340,
-        gravity: "Center",
+        x: 60, y: 50,
+        width: 360, height: 100,
+        gravity: "NorthWest",
+        cover: false
+      )
+    end
+
+    def place_star_character
+      return unless File.exist?(STAR_CHARACTER_PATH)
+
+      place_image(
+        STAR_CHARACTER_PATH,
+        x: 60, y: 60,
+        width: 200, height: 200,
+        gravity: "NorthEast",
         cover: false
       )
     end
 
     def draw_title
-      draw_text(
+      draw_glowing_text(
         @title,
         x: 0,
-        y: 130,
-        size: 128,
-        color: "#4d3228",
-        gravity: "Center"
+        y: 20,
+        size: 120,
+        color: "#fffcf4",
+        glow_color: "#ebb7ff",
+        gravity: "Center",
+        glow_radius: 12,
+        glow_opacity: 0.4
       )
     end
 
@@ -48,9 +89,9 @@ module OgImage
       draw_text(
         @subtitle,
         x: 0,
-        y: 220,
-        size: 40,
-        color: "#5c4033",
+        y: 100,
+        size: 38,
+        color: "#95dbff",
         gravity: "Center"
       )
     end

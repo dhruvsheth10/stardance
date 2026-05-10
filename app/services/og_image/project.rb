@@ -7,6 +7,8 @@ module OgImage
       "no_devlogs" => -> { new(sample_project(devlogs_count: 0)) }
     }.freeze
 
+    STARDANCE_LOGO_PATH = Rails.root.join("app", "assets", "images", "landing", "header", "stardance-logo.png").to_s
+
     class << self
       def sample_project(title: "floob", devlogs_count: 12, banner: true, owner: "hackclub_dev", hours: 42)
         OpenStruct.new(
@@ -25,15 +27,10 @@ module OgImage
     end
 
     def render
-      create_patterned_canvas(
-        frame_color: "#b0805f",
-        card_color: "#7a4b40",
-        inset: 26,
-        card_radius: 42
-      )
+      create_stardance_canvas
 
       draw_thumbnail
-      draw_hack_club_flag
+      draw_stardance_logo
       draw_title
       draw_subtitle
     end
@@ -41,14 +38,17 @@ module OgImage
     private
 
     def draw_title
-      lines_drawn = draw_multiline_text(
+      lines_drawn = draw_glowing_multiline_text(
         @project.title,
         x: 80,
         y: 170,
         size: 72,
-        color: "#fde8d1",
+        color: "#fffcf4",
+        glow_color: "#81ffff",
         max_chars: 18,
-        max_lines: 3
+        max_lines: 3,
+        glow_radius: 6,
+        glow_opacity: 0.3
       )
       @title_end_y = 170 + (lines_drawn * 54 * 1.25).to_i
     end
@@ -66,7 +66,7 @@ module OgImage
           x: 80,
           y: start_y,
           size: 42,
-          color: "#e3d0ab"
+          color: "#ebb7ff"
         )
       end
 
@@ -92,7 +92,7 @@ module OgImage
           x: text_x,
           y: stats_start_y + (index * 52),
           size: 42,
-          color: "#d0ad8b"
+          color: "#95dbff"
         )
       end
     end
@@ -120,13 +120,15 @@ module OgImage
       Rails.root.join("app", "assets", "images", "flavortown_logo.png").to_s
     end
 
-    def draw_hack_club_flag
+    def draw_stardance_logo
+      return unless File.exist?(STARDANCE_LOGO_PATH)
+
       place_image(
-        "https://assets.hackclub.com/flag-standalone.png",
+        STARDANCE_LOGO_PATH,
         x: 80,
         y: 60,
-        width: 180,
-        height: 80,
+        width: 240,
+        height: 68,
         gravity: "NorthWest",
         cover: false
       )
