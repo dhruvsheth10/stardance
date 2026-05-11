@@ -23,15 +23,19 @@ export default class extends Controller {
     if (dialog.classList.contains("user-ref-modal--closing")) return;
 
     dialog.classList.add("user-ref-modal--closing");
-    dialog.addEventListener(
-      "transitionend",
-      (event) => {
-        if (event.propertyName !== "opacity" || event.target !== dialog) return;
-        dialog.close();
-        dialog.classList.remove("user-ref-modal--closing");
-        document.body.style.overflow = "";
-      },
-      { once: true },
-    );
+
+    const cleanup = () => {
+      dialog.removeEventListener("transitionend", onTransitionEnd);
+      clearTimeout(fallback);
+      dialog.close();
+      dialog.classList.remove("user-ref-modal--closing");
+      document.body.style.overflow = "";
+    };
+    const onTransitionEnd = (event) => {
+      if (event.target !== dialog || event.propertyName !== "opacity") return;
+      cleanup();
+    };
+    dialog.addEventListener("transitionend", onTransitionEnd);
+    const fallback = setTimeout(cleanup, 400);
   }
 }
