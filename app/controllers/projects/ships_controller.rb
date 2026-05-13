@@ -1,6 +1,5 @@
 class Projects::ShipsController < ApplicationController
   before_action :set_project
-  before_action :require_shipping_enabled
 
   def new
     authorize @project, :ship?
@@ -41,11 +40,6 @@ class Projects::ShipsController < ApplicationController
 
   def set_project = @project = Project.find(params[:project_id])
 
-  def require_shipping_enabled
-    unless Flipper.enabled?(:shipping)
-      redirect_to @project, alert: "Shipping is currently disabled."
-    end
-  end
   def initial_ship? = @project.posts.where(postable_type: "Post::ShipEvent").one?
 
   def load_ship_data
