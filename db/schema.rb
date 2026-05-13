@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_000005) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_13_191303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -1031,7 +1031,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_000005) do
     t.bigint "project_id", null: false
     t.datetime "repo_checked_at", precision: nil
     t.datetime "reviewed_at", precision: nil
-    t.bigint "reviewer_id", null: false
+    t.bigint "reviewer_id"
     t.bigint "ship_cert_id"
     t.datetime "spotchecked_at", precision: nil
     t.bigint "spotchecked_by_id"
