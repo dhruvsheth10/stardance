@@ -34,6 +34,9 @@ application.register("customs-warning", CustomsWarningController);
 import DecisionTreeController from "./decision_tree_controller";
 application.register("decision-tree", DecisionTreeController);
 
+import DevlogTimeChartController from "./devlog_time_chart_controller";
+application.register("devlog-time-chart", DevlogTimeChartController);
+
 import DialogueIterationController from "./dialogue_iteration_controller";
 application.register("dialogue-iteration", DialogueIterationController);
 
