@@ -17,7 +17,6 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form.project-show--editing[action=?]", project_path(@project)
     assert_select "input[name='project[title]'][value=?]", "Forest Odyssey"
     assert_select "textarea[name='project[description]']", text: "Explore a magical forest"
-    assert_select "[data-controller='hackatime-project-selector'] select:not([multiple])"
     assert_select "input[name='inline_project_show'][value='1']", 1
   end
 

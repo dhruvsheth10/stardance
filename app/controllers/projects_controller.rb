@@ -23,13 +23,6 @@ class ProjectsController < ApplicationController
       @composer_projects = current_user.projects.order(updated_at: :desc)
     end
 
-    if @can_edit_project && current_user
-      @project_times = {}
-      @available_hackatime_projects = current_user.hackatime_projects.order(:name)
-    else
-      @project_times = {}
-      @available_hackatime_projects = User::HackatimeProject.none
-    end
 
     load_posts = -> {
       @project.posts

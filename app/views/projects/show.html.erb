@@ -121,31 +121,6 @@
 
             <div class="project-show__edit-grid">
               <label class="project-show__field project-show__field--inline">
-                <span>Hackatime projects</span>
-                <span class="project-show__hackatime-picker"
-                      data-controller="hackatime-project-selector"
-                      data-hackatime-project-selector-initial-projects-value="<%= @project.hackatime_projects.where(user_id: current_user.id).select(:id, :name).map { |project| { id: project.id, name: project.name } }.to_json %>"
-                      data-hackatime-project-selector-project-times-value="<%= @project_times.to_json %>"
-                      data-project-icon-path="<%= asset_path("icons/rocket.svg") %>"
-                      data-close-icon-path="<%= asset_path("icons/close.svg") %>">
-                  <span class="project-show__control project-show__control--select">
-                    <select class="project-show__select"
-                            aria-label="Hackatime projects"
-                            data-hackatime-project-selector-target="select"
-                            data-action="change->hackatime-project-selector#addProject">
-                      <option value="">Select Hackatime project</option>
-                      <% @available_hackatime_projects.each do |hackatime_project| %>
-                        <option value="<%= hackatime_project.id %>" data-name="<%= hackatime_project.name %>"><%= hackatime_project.name %></option>
-                      <% end %>
-                    </select>
-                  </span>
-                  <span class="project-show__hackatime-selected"
-                        data-hackatime-project-selector-target="selectedContainer"></span>
-                  <span data-hackatime-project-selector-target="hiddenInputs"></span>
-                </span>
-              </label>
-
-              <label class="project-show__field project-show__field--inline">
                 <span>AI usage declaration</span>
                 <%= form.text_area :ai_declaration,
                                    rows: 2,
