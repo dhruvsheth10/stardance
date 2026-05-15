@@ -40,6 +40,9 @@ application.register("faq-accordion", FaqAccordionController);
 import FlashController from "./flash_controller";
 application.register("flash", FlashController);
 
+import HackatimeLinkController from "./hackatime_link_controller";
+application.register("hackatime-link", HackatimeLinkController);
+
 import HcbChartController from "./hcb_chart_controller";
 application.register("hcb-chart", HcbChartController);
 

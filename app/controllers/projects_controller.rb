@@ -21,6 +21,28 @@ class ProjectsController < ApplicationController
     if @is_member && current_user
       @composer_devlog = Post::Devlog.new
       @composer_projects = current_user.projects.order(updated_at: :desc)
+
+      if current_user.hackatime_identity.present?
+        @linked_hackatime_projects = @project.hackatime_projects
+        @all_hackatime_projects = current_user.hackatime_projects.includes(:project)
+        result = current_user.try_sync_hackatime_data!
+        @hackatime_times = result&.dig(:projects) || {}
+
+        linked_ids = @linked_hackatime_projects.map(&:id).to_set
+        @hackatime_dropdown_items = @all_hackatime_projects.map do |hp|
+          seconds = @hackatime_times[hp.name] || 0
+          taken = hp.project_id.present? && hp.project_id != @project.id
+          {
+            id: hp.id,
+            name: hp.name,
+            seconds: seconds,
+            hours: (seconds / 3600.0).round(1),
+            taken: taken,
+            taken_by: taken ? hp.project&.title : nil,
+            linked: linked_ids.include?(hp.id)
+          }
+        end
+      end
     end
 
 

@@ -32,11 +32,7 @@ class Projects::DevlogsController < ApplicationController
             )
           end
         end
-
-        if current_user.complete_tutorial_step! :post_devlog
-          tutorial_message OnboardingCopy::FIRST_DEVLOG_POSTED
-        end
-
+        
         return redirect_to project_path(@project)
       else
         redirect_back fallback_location: home_path(project_id: @project.id),
