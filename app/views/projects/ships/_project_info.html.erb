@@ -56,7 +56,7 @@
       <div class="ship__upload" data-controller="file-upload" data-file-upload-max-size-value="<%= Project::MAX_BANNER_SIZE %>">
         <% if @project.banner.attached? %>
           <div class="ship__upload-preview">
-            <%= image_tag @project.banner, class: "ship__upload-image" %>
+            <%= image_tag @project.banner, class: "ship__upload-image", data: { "file-upload-target": "preview" } %>
           </div>
         <% end %>
         <label class="ship__upload-dropzone">
