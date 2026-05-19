@@ -2,7 +2,6 @@ module User::StateFlags
   extend ActiveSupport::Concern
 
   DISMISSIBLE_THINGS = %w[home_intro flagship_ad shop_suggestion_box willsbuilds_banner].freeze
-  ARRAY_COLUMNS = %i[tutorial_steps_completed things_dismissed].freeze
 
   # Use symbols here; `tutorial_steps_completed` is the raw persisted array.
   def tutorial_steps = tutorial_steps_completed&.map(&:to_sym) || []
@@ -43,13 +42,21 @@ module User::StateFlags
 
   private
     def append_array_value_once(column, value)
-      quoted_column = quoted_array_column(column)
       values = public_send(column) || []
       return if values.include?(value)
 
-      updated = self.class.where(id: id)
-        .where.not("#{quoted_column} @> ARRAY[?]::varchar[]", value)
-        .update_all([ "#{quoted_column} = array_append(#{quoted_column}, ?), updated_at = NOW()", value ])
+      updated = case column.to_sym
+      when :tutorial_steps_completed
+        self.class.where(id: id)
+          .where.not("tutorial_steps_completed @> ARRAY[?]::varchar[]", value)
+          .update_all([ "tutorial_steps_completed = array_append(tutorial_steps_completed, ?), updated_at = NOW()", value ])
+      when :things_dismissed
+        self.class.where(id: id)
+          .where.not("things_dismissed @> ARRAY[?]::varchar[]", value)
+          .update_all([ "things_dismissed = array_append(things_dismissed, ?), updated_at = NOW()", value ])
+      else
+        raise ArgumentError, "unknown array column #{column.inspect}"
+      end
       return false if updated.zero?
 
       public_send("#{column}=", values + [ value ])
@@ -57,18 +64,20 @@ module User::StateFlags
     end
 
     def remove_array_value(column, value)
-      quoted_column = quoted_array_column(column)
       values = public_send(column) || []
       return unless values.include?(value)
 
-      self.class.where(id: id)
-        .update_all([ "#{quoted_column} = array_remove(#{quoted_column}, ?), updated_at = NOW()", value ])
+      case column.to_sym
+      when :tutorial_steps_completed
+        self.class.where(id: id)
+          .update_all([ "tutorial_steps_completed = array_remove(tutorial_steps_completed, ?), updated_at = NOW()", value ])
+      when :things_dismissed
+        self.class.where(id: id)
+          .update_all([ "things_dismissed = array_remove(things_dismissed, ?), updated_at = NOW()", value ])
+      else
+        raise ArgumentError, "unknown array column #{column.inspect}"
+      end
       public_send("#{column}=", values - [ value ])
       true
-    end
-
-    def quoted_array_column(column)
-      raise ArgumentError, "unknown array column #{column.inspect}" unless ARRAY_COLUMNS.include?(column.to_sym)
-      self.class.connection.quote_column_name(column)
     end
 end
