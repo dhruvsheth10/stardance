@@ -1307,7 +1307,7 @@
 
   // Devlogs Card (Full Width - Outside Grid)
   .devlogs-card {
-    margin-top: var(--space-l);
+    margin-top: calc(var(--space-l) + 10px);
 
     .devlogs-header {
       margin-bottom: var(--space-l);
@@ -1665,8 +1665,10 @@
     }
   }
 
-  // Actions Card
+  // Actions Card (Full Width - Outside Grid)
   .actions-card {
+    margin-top: calc(var(--space-l) + 10px);
+
     .checklist-warning {
       background: rgba(255, 141, 157, 0.1);
       border: 2px solid var(--color-brand-salmon);
