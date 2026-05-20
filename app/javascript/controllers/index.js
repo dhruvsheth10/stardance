@@ -151,6 +151,9 @@ application.register("user-ref-modal", UserRefModalController);
 import VimeoPlayerController from "./vimeo_player_controller";
 application.register("vimeo-player", VimeoPlayerController);
 
+import WelcomeTourController from "./welcome_tour_controller";
+application.register("welcome-tour", WelcomeTourController);
+
 import WhatIsThisController from "./what_is_this_controller";
 application.register("what-is-this", WhatIsThisController);
 

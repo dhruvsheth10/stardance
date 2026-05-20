@@ -81,8 +81,12 @@ class ProjectsController < ApplicationController
     @posts = @posts.reject { |post| post.postable_type == "Post::ShipEvent" && post.postable.certification_status != "approved" }
 
     @show_project_onboarding = @is_member && @posts.empty?
-    @show_hackatime_onboarding = @show_project_onboarding && current_user && current_user.hackatime_identity.blank?
     @project_onboarding_mission = @project.current_mission
+
+    @show_project_tour = params[:welcome] == "1" && current_user.present? && @is_member &&
+                         current_user.projects.count == 1 && !session[:project_tour_seen]
+
+    session[:project_tour_seen] = true if @show_project_tour
 
     if current_user
       devlog_ids = @posts.select { |p| p.postable_type == "Post::Devlog" }.map(&:postable_id)

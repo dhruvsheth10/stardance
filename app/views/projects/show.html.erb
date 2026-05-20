@@ -23,6 +23,10 @@
   can_edit_project = @can_edit_project
 %>
 
+<% if @show_project_tour %>
+  <%= render "welcome_tour" %>
+<% end %>
+
 <div class="app-layout">
   <div class="app-layout__main">
 
@@ -337,22 +341,33 @@
     <% end %>
 
     <% if is_member %>
-      <nav class="project-show__actions" aria-label="Project actions">
-        <button type="button"
-                class="project-show__action project-show__action--secondary"
-                onclick="document.getElementById('composer-modal-' + <%= @project.id.to_json %>).showModal()">
-          Post a devlog<span class="project-show__action-icon" aria-hidden="true">+</span>
-        </button>
-        <%= link_to new_project_ships_path(@project),
-                    class: "project-show__action project-show__action--primary",
-                    data: { turbo_frame: "_top" } do %>
-          Create new ship<%= image_tag "icons/rocket.png", alt: "", class: "project-show__action-icon project-show__action-icon--img" %>
-        <% end %>
-        <button type="button"
-                class="project-show__action project-show__action--secondary"
-                disabled
-                title="Manage teammates — coming soon">Manage teammates</button>
-      </nav>
+      <% if @hackatime_linked %>
+        <nav class="project-show__actions" aria-label="Project actions">
+          <button type="button"
+                  class="project-show__action project-show__action--secondary"
+                  onclick="document.getElementById('composer-modal-' + <%= @project.id.to_json %>).showModal()">
+            Post a devlog<span class="project-show__action-icon" aria-hidden="true">+</span>
+          </button>
+          <%= link_to new_project_ships_path(@project),
+                      class: "project-show__action project-show__action--primary",
+                      data: { turbo_frame: "_top" } do %>
+            Create new ship<%= image_tag "icons/rocket.png", alt: "", class: "project-show__action-icon project-show__action-icon--img" %>
+          <% end %>
+          <button type="button"
+                  class="project-show__action project-show__action--secondary"
+                  disabled
+                  title="Manage teammates — coming soon">Manage teammates</button>
+        </nav>
+      <% else %>
+        <nav class="project-show__actions project-show__actions--single" aria-label="Project actions">
+          <%= button_to "/auth/hackatime",
+                        method: :post,
+                        class: "project-show__action project-show__action--primary project-show__action--full",
+                        form: { class: "project-show__action-form" } do %>
+            Link Hackatime to track your project time<%= image_tag "icons/right-arrow.svg", alt: "", class: "project-show__action-icon project-show__action-icon--img" %>
+          <% end %>
+        </nav>
+      <% end %>
     <% end %>
 
     <% if @show_project_onboarding %>
@@ -374,19 +389,6 @@
               <span class="project-show__onboarding-card-body-text">Learn to use a GitHub repository to store your project's code, and link it to your Stardance project.</span>
             </span>
             <span class="project-show__onboarding-card-action">See tutorial →</span>
-          <% end %>
-
-          <% if @show_hackatime_onboarding %>
-            <%= button_to "/auth/hackatime",
-                          method: :post,
-                          class: "project-show__onboarding-card project-show__onboarding-card--button",
-                          form: { class: "project-show__onboarding-form" } do %>
-              <span class="project-show__onboarding-card-body">
-                <strong class="project-show__onboarding-card-body-title">Set up hour tracking with Hackatime</strong>
-                <span class="project-show__onboarding-card-body-text">Set up Hackatime in your editor to log hours for your project easily.</span>
-              </span>
-              <span class="project-show__onboarding-card-action">See tutorial →</span>
-            <% end %>
           <% end %>
 
           <% if @project_onboarding_mission.present? %>
