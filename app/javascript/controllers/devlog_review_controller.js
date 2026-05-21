@@ -28,13 +28,13 @@ export default class extends Controller {
     "minutesInput",
     "approveButton",
     "rejectButton",
-    "notesTextarea"
+    "notesTextarea",
   ];
 
   static values = {
     id: Number,
     originalMinutes: Number,
-    status: String
+    status: String,
   };
 
   connect() {
@@ -60,7 +60,9 @@ export default class extends Controller {
 
     // Client-side validation: no negative minutes
     if (minutes < 0) {
-      console.warn(`DevlogReview #${this.idValue}: Cannot set negative minutes`);
+      console.warn(
+        `DevlogReview #${this.idValue}: Cannot set negative minutes`,
+      );
       event.target.value = 0;
       return;
     }
@@ -70,7 +72,7 @@ export default class extends Controller {
 
     // Debounce for 500ms
     this.minutesDebounceTimer = setTimeout(() => {
-     // console.log(`DevlogReview #${this.idValue}: Updating minutes to ${minutes}`);
+      // console.log(`DevlogReview #${this.idValue}: Updating minutes to ${minutes}`);
       this.sendUpdate({ approved_minutes: minutes });
     }, 500);
   }
@@ -84,10 +86,10 @@ export default class extends Controller {
       return;
     }
 
-   // console.log(`DevlogReview #${this.idValue}: Approving with ${minutes} minutes`);
+    // console.log(`DevlogReview #${this.idValue}: Approving with ${minutes} minutes`);
     this.sendUpdate({
       status: "approved",
-      approved_minutes: minutes
+      approved_minutes: minutes,
     });
   }
 
@@ -96,7 +98,7 @@ export default class extends Controller {
     //console.log(`DevlogReview #${this.idValue}: Rejecting`);
     this.sendUpdate({
       status: "rejected",
-      approved_minutes: 0
+      approved_minutes: 0,
     });
   }
 
@@ -117,7 +119,8 @@ export default class extends Controller {
   // Handle quick adjust buttons
   quickAdjust(event) {
     const action = event.target.dataset.adjustAction;
-    const currentMinutes = parseInt(this.minutesInputTarget.value) || this.originalMinutesValue;
+    const currentMinutes =
+      parseInt(this.minutesInputTarget.value) || this.originalMinutesValue;
     let newMinutes;
 
     switch (action) {
@@ -153,16 +156,18 @@ export default class extends Controller {
   // Send update to server
   async sendUpdate(data) {
     const url = `/admin/devlog_reviews/${this.idValue}`;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const csrfToken = document.querySelector(
+      'meta[name="csrf-token"]',
+    )?.content;
 
     try {
       const response = await fetch(url, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken
+          "X-CSRF-Token": csrfToken,
         },
-        body: JSON.stringify({ devlog_review: data })
+        body: JSON.stringify({ devlog_review: data }),
       });
 
       const result = await response.json();
@@ -181,7 +186,10 @@ export default class extends Controller {
           this.minutesInputTarget.value = data.approved_minutes;
         }
       } else {
-        console.error(`DevlogReview #${this.idValue}: Update failed`, result.errors);
+        console.error(
+          `DevlogReview #${this.idValue}: Update failed`,
+          result.errors,
+        );
         alert(`Update failed: ${result.errors.join(", ")}`);
       }
     } catch (error) {

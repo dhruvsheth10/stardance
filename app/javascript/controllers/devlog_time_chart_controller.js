@@ -27,7 +27,7 @@ export default class extends Controller {
     const barHeight = 32;
     const height = Math.max(
       data.length * (barHeight + 8) + marginTop + marginBottom,
-      200
+      200,
     );
 
     // Create scales
@@ -65,7 +65,7 @@ export default class extends Controller {
       .attr("width", (d) => x(d.minutes) - x(0))
       .attr("height", y.bandwidth())
       .attr("fill", (d) =>
-        d.minutes > 600 ? overLimitBarColor : normalBarColor
+        d.minutes > 600 ? overLimitBarColor : normalBarColor,
       )
       .attr("rx", 4)
       .style("cursor", "pointer")
@@ -113,7 +113,7 @@ export default class extends Controller {
             const item = data.find((item) => item.label === d);
             return item && item.minutes > 600 ? "700" : "400";
           })
-          .attr("font-family", "var(--font-family-sans)")
+          .attr("font-family", "var(--font-family-sans)"),
       )
       .call((g) => g.selectAll(".tick line").remove());
 
@@ -125,7 +125,7 @@ export default class extends Controller {
         d3
           .axisTop(x)
           .ticks(width / 100)
-          .tickFormat((d) => `${(d / 60).toFixed(0)}h`)
+          .tickFormat((d) => `${(d / 60).toFixed(0)}h`),
       )
       .call((g) => g.select(".domain").remove())
       .call((g) =>
@@ -133,13 +133,13 @@ export default class extends Controller {
           .selectAll(".tick text")
           .attr("fill", "rgba(255, 255, 255, 0.5)")
           .attr("font-size", "10px")
-          .attr("font-family", "var(--font-family-sans)")
+          .attr("font-family", "var(--font-family-sans)"),
       )
       .call((g) =>
         g
           .selectAll(".tick line")
           .attr("stroke", "rgba(255, 255, 255, 0.1)")
-          .attr("stroke-dasharray", "2,2")
+          .attr("stroke-dasharray", "2,2"),
       );
 
     // Append SVG to element

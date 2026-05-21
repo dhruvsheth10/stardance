@@ -41,7 +41,7 @@ export default class extends Controller {
         // Negative top margin means element must scroll this far up before triggering
         threshold: 0.1,
         rootMargin: "-300px 0px 0px 0px",
-      }
+      },
     );
 
     this.observer.observe(this.triggerTarget);

@@ -59,23 +59,32 @@ export default class extends Controller {
     this.submitButtonTarget.textContent = "Submitting...";
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      const response = await fetch(`/admin/review/${this.reviewIdValue}/report_fraud`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]',
+      ).content;
+      const response = await fetch(
+        `/admin/review/${this.reviewIdValue}/report_fraud`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+          },
+          body: JSON.stringify({ details }),
         },
-        body: JSON.stringify({ details }),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Report submitted successfully! The fraud squad has been notified.");
+        alert(
+          "Report submitted successfully! The fraud squad has been notified.",
+        );
         this.close();
       } else {
-        const errorMessage = data.errors ? data.errors.join(", ") : "Failed to submit report";
+        const errorMessage = data.errors
+          ? data.errors.join(", ")
+          : "Failed to submit report";
         alert(`Error: ${errorMessage}`);
         this.submitButtonTarget.disabled = false;
         this.submitButtonTarget.textContent = "Submit Report";

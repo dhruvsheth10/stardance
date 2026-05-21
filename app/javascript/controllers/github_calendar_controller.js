@@ -43,7 +43,12 @@ export default class extends Controller {
       .attr("style", "max-width: 100%; height: auto;");
 
     // Calculate month positions
-    const months = this.getMonthPositions(days, cellSize, cellSpacing, weekLabelWidth);
+    const months = this.getMonthPositions(
+      days,
+      cellSize,
+      cellSpacing,
+      weekLabelWidth,
+    );
 
     // Add month labels (smaller font for compact view)
     svg
@@ -81,8 +86,14 @@ export default class extends Controller {
       .selectAll("rect")
       .data(days.filter((d) => !d.future)) // Don't render future dates
       .join("rect")
-      .attr("x", (d) => weekLabelWidth + d.week_index * (cellSize + cellSpacing))
-      .attr("y", (d) => monthLabelHeight + d.day_of_week * (cellSize + cellSpacing))
+      .attr(
+        "x",
+        (d) => weekLabelWidth + d.week_index * (cellSize + cellSpacing),
+      )
+      .attr(
+        "y",
+        (d) => monthLabelHeight + d.day_of_week * (cellSize + cellSpacing),
+      )
       .attr("width", cellSize)
       .attr("height", cellSize)
       .attr("rx", 1.3)
@@ -90,7 +101,9 @@ export default class extends Controller {
       .attr("stroke", "none")
       .style("cursor", "pointer")
       .on("mouseenter", function (event, d) {
-        d3.select(this).attr("stroke", "rgba(255, 255, 255, 0.5)").attr("stroke-width", 1);
+        d3.select(this)
+          .attr("stroke", "rgba(255, 255, 255, 0.5)")
+          .attr("stroke-width", 1);
 
         const date = new Date(d.date);
         const dateFormatted = date.toLocaleDateString("en-US", {
@@ -98,11 +111,14 @@ export default class extends Controller {
           day: "numeric",
           year: "numeric",
         });
-        const contributionText = d.count === 1 ? "contribution" : "contributions";
+        const contributionText =
+          d.count === 1 ? "contribution" : "contributions";
 
         tooltip
           .style("visibility", "visible")
-          .html(`<strong>${d.count}</strong> ${contributionText}<br/>${dateFormatted}`);
+          .html(
+            `<strong>${d.count}</strong> ${contributionText}<br/>${dateFormatted}`,
+          );
       })
       .on("mousemove", function (event) {
         tooltip
@@ -145,7 +161,9 @@ export default class extends Controller {
       // Skip the very first month to avoid duplicate
       if (month !== lastMonth && day.day_of_week === 0) {
         if (!isFirstMonth) {
-          const monthLabel = date.toLocaleDateString("en-US", { month: "short" });
+          const monthLabel = date.toLocaleDateString("en-US", {
+            month: "short",
+          });
           monthPositions.push({
             x: weekLabelWidth + day.week_index * (cellSize + cellSpacing),
             label: monthLabel,
