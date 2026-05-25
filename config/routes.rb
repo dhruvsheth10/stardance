@@ -513,9 +513,6 @@ Rails.application.routes.draw do
   # Home
   get "home", to: "home#index"
 
-  # Command Palette
-  get "commands", to: "commands#index"
-
   # Leaderboard
   get "leaderboard", to: "leaderboard#index"
 
@@ -525,7 +522,9 @@ Rails.application.routes.draw do
   # My
   namespace :my do
     resource :balance, only: [ :show ]
-    resource :settings, only: [ :update ]
+    resource :settings, only: [ :update ] do
+      post :streamer_mode, on: :member, action: :toggle_streamer_mode
+    end
     resources :dismissals, only: [ :create ]
   end
   get "my/achievements", to: "achievements#index", as: :my_achievements
@@ -744,6 +743,7 @@ Rails.application.routes.draw do
   # Projects — public index lives on the user profile projects section; only
   # show/new/edit/update/destroy and the nested resources are exposed here.
   resources :projects, shallow: true, except: [ :index ] do
+    post :add_test_time, on: :member
     resources :memberships, only: [ :create, :destroy ], module: :projects
     resources :devlogs, only: %i[create edit update destroy], module: :projects, shallow: false do
       member do
@@ -756,6 +756,16 @@ Rails.application.routes.draw do
     resources :reports, only: [ :create ], module: :projects
     resource :og_image, only: [ :show ], module: :projects, defaults: { format: :png }
     resource :ships, only: [ :new, :create ], module: :projects do
+      # Wizard steps, one route per page (rather than ?step=N query param):
+      #   new      → refresher
+      #   info     → project info form
+      #   review   → review-instructions form (GET only — POST goes to the
+      #              nested :review resource below, which persists the value
+      #              into the session wizard and redirects to compose)
+      #   compose  → final ship composer
+      get :info,    on: :member
+      get :review,  on: :member, action: :review_step
+      get :compose, on: :member
       resource :review, only: [ :create ], module: :ships
     end
     resource :mission, only: [ :create, :destroy ], module: :projects, controller: "missions"

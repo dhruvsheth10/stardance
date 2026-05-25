@@ -511,11 +511,7 @@ turbo-frame#project_hero {
   }
 }
 
-// `--outline` is an alias for the base style (transparent fill + outline) so
-// templates can opt into it explicitly. No additional CSS.
-.project-show__pill--outline {
-  // inherits base
-}
+// `--outline` is an alias for the base style so templates can opt into it.
 
 // Primary action (Save / Edit) on a light bg. State ladder steps DARKER
 // from white → highlight-secondary → highlight, so the visual feedback is a
@@ -730,8 +726,26 @@ turbo-frame#project_hero {
     color: var(--color-set-1-bg);
   }
 
-  &--secondary {
-    // inherits base — set-2 fill with set-3-coloured border + white text
+  // `--secondary` inherits the base set-2 fill with set-3 border + white text.
+
+  &--test {
+    border-color: color-mix(
+      in srgb,
+      var(--color-brand-yellow) 55%,
+      transparent
+    );
+    background: color-mix(
+      in srgb,
+      var(--color-brand-yellow) 14%,
+      var(--color-set-2-bg)
+    );
+    color: var(--color-brand-yellow);
+  }
+
+  &--test:hover:not(:disabled),
+  &--test:focus-visible:not(:disabled) {
+    border-color: var(--color-brand-yellow);
+    color: var(--color-brand-cream);
   }
 }
 
@@ -1255,6 +1269,7 @@ turbo-frame#project_hero {
   left: 50%;
   translate: -50% 0;
   margin: 0;
+  max-height: 76vh;
   overflow: visible;
 
   &::backdrop {
@@ -1264,6 +1279,140 @@ turbo-frame#project_hero {
 
   .feed-composer {
     background: var(--color-space-bg-2, #0d0b2e);
+    display: flex;
+    flex-direction: column;
+    max-height: 76vh;
+  }
+
+  .feed-composer__chips,
+  .feed-composer__grid,
+  .feed-composer__info-wrap,
+  .feed-composer__toolbar {
+    flex-shrink: 0;
+  }
+
+  .feed-composer__form {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .feed-composer__scroll {
+    display: contents;
+  }
+
+  .feed-composer__main {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .feed-composer__field {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+
+  .feed-composer__textarea {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+.ship-warning-modal {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: min(440px, 92vw);
+  width: 100%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  margin: 0;
+  color: var(--color-space-text);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  &__body {
+    background: var(--color-space-bg-2, #0d0b2e);
+    border: 1px solid var(--color-space-border);
+    border-radius: var(--border-radius);
+    padding: var(--space-l) var(--space-l) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-size: var(--font-size-xxl);
+    font-weight: 700;
+    color: var(--color-brand-salmon);
+  }
+
+  &__text {
+    margin: 0;
+    font-size: var(--font-size-base);
+    line-height: 1.4;
+
+    strong {
+      color: var(--color-brand-yellow);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--space-s);
+    justify-content: flex-end;
+    margin-top: var(--space-xs);
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 2px solid var(--color-set-3-bg);
+    background: var(--color-set-2-bg);
+    color: var(--color-space-text);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+
+    &--secondary:hover,
+    &--secondary:focus-visible {
+      border-color: var(--color-brand-highlight-secondary);
+      color: var(--color-brand-highlight-secondary);
+      outline: none;
+    }
+
+    &--primary {
+      background: var(--color-brand-salmon);
+      border-color: var(--color-brand-salmon);
+      color: var(--color-set-1-bg);
+    }
+
+    &--primary:hover,
+    &--primary:focus-visible {
+      filter: brightness(1.05);
+      outline: none;
+    }
   }
 }
 

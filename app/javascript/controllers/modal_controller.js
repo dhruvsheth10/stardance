@@ -10,12 +10,41 @@ export default class extends Controller {
       this.element.addEventListener("click", this._boundBackdropClick);
     }
 
+    if (this.element.tagName === "DIALOG") {
+      this._heldBodyOverflow = false;
+      this._previousBodyOverflow = "";
+      this._syncBodyScrollLock = () => {
+        if (this.element.open && !this._heldBodyOverflow) {
+          this._previousBodyOverflow = document.body.style.overflow;
+          document.body.style.overflow = "hidden";
+          this._heldBodyOverflow = true;
+        } else if (!this.element.open && this._heldBodyOverflow) {
+          document.body.style.overflow = this._previousBodyOverflow;
+          this._heldBodyOverflow = false;
+        }
+      };
+      this._dialogObserver = new MutationObserver(this._syncBodyScrollLock);
+      this._dialogObserver.observe(this.element, {
+        attributes: true,
+        attributeFilter: ["open"],
+      });
+      this._syncBodyScrollLock();
+    }
+
     this.openSettingsModalFromQueryParam();
   }
 
   disconnect() {
     if (!this.hasTargetValue) {
       this.element.removeEventListener("click", this._boundBackdropClick);
+    }
+    if (this._dialogObserver) {
+      this._dialogObserver.disconnect();
+      this._dialogObserver = null;
+      if (this._heldBodyOverflow) {
+        document.body.style.overflow = this._previousBodyOverflow;
+        this._heldBodyOverflow = false;
+      }
     }
   }
 
@@ -62,6 +91,12 @@ export default class extends Controller {
       if (event.target === this.element) this.close();
       return;
     }
+
+    // A real backdrop click on a <dialog> fires with event.target === the
+    // dialog itself. Clicks on inner content (including synthetic ones from
+    // things like fileInput.click(), which bubble up at coords 0,0) have
+    // event.target on the descendant — never treat those as backdrop hits.
+    if (event.target !== this.element) return;
 
     const rect = this.element.getBoundingClientRect();
     const clickedInside =

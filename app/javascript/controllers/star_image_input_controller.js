@@ -19,8 +19,13 @@ export default class extends Controller {
   ];
 
   connect() {
-    this.#setState("idle");
-    this.#setText(IDLE_PRIMARY, IDLE_SECONDARY);
+    // If the server pre-rendered the component with an existing image (e.g.
+    // a project banner already attached), keep the "loaded" state and the
+    // SSR'd primary/secondary text instead of clobbering them to idle.
+    if (this.#state !== "loaded") {
+      this.#setState("idle");
+      this.#setText(IDLE_PRIMARY, IDLE_SECONDARY);
+    }
   }
 
   disconnect() {
@@ -97,7 +102,10 @@ export default class extends Controller {
     const start = performance.now();
     const tick = () => {
       if (loadId !== this.#loadId) return;
-      const pct = Math.min(99, ((performance.now() - start) / FAKE_LOAD_DURATION_MS) * 100);
+      const pct = Math.min(
+        99,
+        ((performance.now() - start) / FAKE_LOAD_DURATION_MS) * 100,
+      );
       this.#setProgress(pct);
       if (this.#state === "loading") this.#rafId = requestAnimationFrame(tick);
     };
