@@ -55,11 +55,6 @@ class ApplicationController < ActionController::Base
     impersonating? ? real_user : current_user
   end
 
-  def tutorial_messages
-    flash[:tutorial_messages] || []
-  end
-  helper_method :tutorial_messages
-
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
