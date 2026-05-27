@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_180903) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_130616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -975,29 +975,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_180903) do
 
   create_table "votes", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.boolean "demo_url_clicked", default: false
     t.integer "originality_score"
     t.bigint "project_id", null: false
     t.text "reason"
-    t.string "reason_quality_label"
-    t.float "reason_quality_score"
-    t.boolean "repo_url_clicked", default: false
     t.bigint "ship_event_id", null: false
     t.integer "storytelling_score"
-    t.boolean "suspicious", default: false, null: false
     t.integer "technical_score"
-    t.integer "time_taken_to_vote"
     t.datetime "updated_at", null: false
     t.integer "usability_score"
     t.bigint "user_id", null: false
-    t.string "verdict"
     t.index ["project_id"], name: "index_votes_on_project_id"
-    t.index ["reason_quality_label"], name: "index_votes_on_reason_quality_label"
     t.index ["ship_event_id"], name: "index_votes_on_ship_event_id"
-    t.index ["suspicious", "created_at"], name: "index_votes_on_suspicious_and_created_at"
     t.index ["user_id", "ship_event_id"], name: "index_votes_on_user_id_and_ship_event_id", unique: true
     t.index ["user_id"], name: "index_votes_on_user_id"
-    t.index ["verdict"], name: "index_votes_on_verdict"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
