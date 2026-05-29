@@ -1,50 +1,100 @@
-.reviewer-show {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--space-xxl) clamp(20px, 2.4vw, 46px);
+// Individual ship review (admin/certification/ships#show). Dark "space" theme
+// matching the queue dashboard (_index.scss): a project-details column beside a
+// sticky verdict form. Reuses .status-pill and .action-btn.
+
+.ship-review {
+  --card-bg: var(--color-space-card, rgba(255, 255, 255, 0.04));
+  --card-border: var(--color-space-border, rgba(255, 255, 255, 0.1));
+  --accent: var(--color-brand-highlight);
+  --muted: var(--color-space-text-muted, rgba(255, 255, 255, 0.7));
+
+  color: var(--color-space-text);
+
+  &__back {
+    display: inline-block;
+    margin-bottom: var(--space-m);
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--accent);
+    }
+  }
 
   &__header {
-    margin-bottom: var(--space-xl);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-bottom: var(--space-l);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
 
     h1 {
-      margin: 0 0 var(--space-xs);
-      font-size: var(--font-size-xxxl);
+      margin: 0;
+      font-size: 2rem;
       line-height: var(--line-height-headers);
     }
+  }
 
-    p {
-      margin: 0;
-      color: var(--color-text-muted);
-    }
+  &__id {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
 
-    a {
-      color: var(--color-brand-highlight);
-      text-decoration: underline;
+  &__body {
+    display: grid;
+    grid-template-columns: 1fr minmax(320px, 420px);
+    gap: var(--space-l);
+    align-items: start;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
     }
   }
 
-  &__project {
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  &__panel {
     padding: var(--space-l);
-    margin-bottom: var(--space-xl);
-    background: var(--color-card-bg, white);
-    border: 1px solid hsl(0, 0%, 88%);
-    border-radius: 8px;
-
-    h2 {
-      margin: 0 0 var(--space-s);
-      font-size: var(--font-size-xl);
-    }
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
   }
 
-  &__links {
+  &__panel-title {
+    margin: 0 0 var(--space-s);
+    font-size: var(--font-size-l);
+  }
+
+  &__description {
+    margin: 0;
+    line-height: var(--line-height-body);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  &__links,
+  &__meta {
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: var(--space-xs) var(--space-m);
-    margin: var(--space-m) 0 0;
+    margin: 0;
 
     dt {
       font-weight: 600;
-      color: var(--color-text-muted);
+      color: var(--muted);
     }
 
     dd {
@@ -53,8 +103,17 @@
     }
 
     a {
-      color: var(--color-brand-highlight);
+      color: var(--accent);
       text-decoration: underline;
+    }
+  }
+
+  &__sidebar {
+    position: sticky;
+    top: var(--space-l);
+
+    @media (max-width: 900px) {
+      position: static;
     }
   }
 
@@ -64,27 +123,34 @@
     gap: var(--space-s);
     align-items: flex-start;
     padding: var(--space-l);
-    background: var(--color-card-bg, white);
-    border: 1px solid hsl(0, 0%, 88%);
-    border-radius: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
   }
 }
 
+// Verdict form (_form.html.erb), shown in the review sidebar.
 .review-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-l);
   padding: var(--space-l);
-  background: var(--color-card-bg, white);
-  border: 1px solid hsl(0, 0%, 88%);
-  border-radius: 8px;
+  color: var(--color-space-text);
+  background: var(--color-space-card, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--color-space-border, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
 
   &__errors {
     padding: var(--space-s) var(--space-m);
-    color: hsl(0, 60%, 30%);
-    background: hsl(0, 80%, 96%);
-    border: 1px solid hsl(0, 60%, 80%);
-    border-radius: 6px;
+    color: var(--color-brand-salmon);
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    border-radius: 8px;
 
     ul {
       padding-left: var(--space-l);
@@ -128,15 +194,34 @@
       padding: var(--space-s);
       font-family: inherit;
       font-size: var(--font-size-m);
+      color: var(--color-space-text);
+      background: var(--color-space-surface, rgba(255, 255, 255, 0.04));
       resize: vertical;
-      border: 1px solid hsl(0, 0%, 80%);
-      border-radius: 6px;
+      border: 1px solid var(--color-space-border, rgba(255, 255, 255, 0.18));
+      border-radius: 8px;
+
+      &:focus-visible {
+        outline: 2px solid var(--color-brand-highlight);
+        outline-offset: 1px;
+      }
     }
   }
 
   &__actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-s);
+  }
+
+  &__back {
+    color: var(--color-space-text-muted, rgba(255, 255, 255, 0.7));
+    font-size: 0.9rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-brand-highlight);
+    }
   }
 }
