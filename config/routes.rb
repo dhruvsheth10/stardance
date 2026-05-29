@@ -764,4 +764,8 @@ Rails.application.routes.draw do
   end
 
   get "/:ref", to: "landing#index", constraints: { ref: /[a-z0-9][a-z0-9_-]{0,63}/ }
+
+  # Catch-all so unmatched URLs render the branded 404 (with sidebar for
+  # signed-in viewers) instead of the static public/404.html fallback.
+  match "*unmatched", to: "errors#not_found", via: :all
 end

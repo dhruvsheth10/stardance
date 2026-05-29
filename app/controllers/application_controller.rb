@@ -118,7 +118,12 @@ class ApplicationController < ActionController::Base
   end
 
   def render_not_found
-    render file: Rails.root.join("public/404.html"), status: :not_found, layout: false
+    @body_class = "not-found-page-body"
+    respond_to do |format|
+      format.html { render "errors/not_found", status: :not_found, layout: "application" }
+      format.json { render json: { error: "Not found" }, status: :not_found }
+      format.any { head :not_found }
+    end
   end
 
   def user_not_authorized(exception)
