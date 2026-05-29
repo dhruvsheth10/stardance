@@ -75,7 +75,9 @@ body.error-page-body {
     padding: var(--space-xxs) var(--space-s);
     word-break: break-all;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
 
     &:hover {
       background-color: var(--color-overlay-light-soft);
