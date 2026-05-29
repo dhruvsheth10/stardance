@@ -1,20 +1,5 @@
 <% content_for :title, "404 — Page Not Found" %>
-<% home_target = current_user.present? ? home_path : root_path %>
 
-<main class="not-found-page">
-  <section class="not-found-page__content">
-    <h1 class="not-found-page__code">404</h1>
-    <p class="not-found-page__lede">We can&rsquo;t find the page you&rsquo;re looking for :(</p>
-
-    <%= image_tag "errors/not-found-hug.svg", alt: "", class: "not-found-page__art", aria: { hidden: true } %>
-
-    <p class="not-found-page__body">
-      If you feel like this was a mistake, let us know in
-      <span class="not-found-page__channel">#stardance-help</span>,
-      and we&rsquo;ll fix it right up!
-    </p>
-    <p class="not-found-page__body">
-      Meanwhile, maybe <%= link_to "head back to home", home_target, class: "not-found-page__home-link" %>?
-    </p>
-  </section>
-</main>
+<%= render "errors/error",
+           code: "404",
+           lede: "We can’t find the page you’re looking for :(" %>

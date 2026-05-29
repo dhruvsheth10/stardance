@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render_not_found
-    @body_class = "not-found-page-body"
+    @body_class = "error-page-body"
     respond_to do |format|
       format.html { render "errors/not_found", status: :not_found, layout: "application" }
       format.json { render json: { error: "Not found" }, status: :not_found }
@@ -201,6 +201,7 @@ class ApplicationController < ActionController::Base
   end
 
   def handle_error(exception)
+    @body_class = "error-page-body"
     event_id = Sentry.last_event_id || Sentry.capture_exception(exception)&.event_id
     @trace_id = event_id || request.request_id
     @exception = exception if current_user&.admin?

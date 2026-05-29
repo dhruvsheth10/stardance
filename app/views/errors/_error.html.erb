@@ -1,0 +1,34 @@
+<% home_target = current_user.present? ? home_path : root_path %>
+
+<main class="error-page">
+  <section class="error-page__content">
+    <h1 class="error-page__code"><%= code %></h1>
+    <p class="error-page__lede"><%= lede %></p>
+
+    <%= image_tag "errors/not-found-hug.svg", alt: "", class: "error-page__art", aria: { hidden: true } %>
+
+    <% if local_assigns[:trace_id].present? %>
+      <p class="error-page__body">
+        If you need help, share this reference code:
+      </p>
+      <code class="error-page__trace"><%= trace_id %></code>
+    <% end %>
+
+    <p class="error-page__body">
+      If you feel like this was a mistake, let us know in
+      <a href="https://hackclub.enterprise.slack.com/archives/C0AP0NMSP3P" class="error-page__channel">#stardance-help</span>,
+      and we&rsquo;ll fix it right up!
+    </p>
+    <p class="error-page__body">
+      Meanwhile, maybe <%= link_to "head back to home", home_target, class: "error-page__home-link" %>?
+    </p>
+
+    <% if local_assigns[:exception].present? %>
+      <details class="error-page__details">
+        <summary class="error-page__details-summary"><%= exception.class %></summary>
+        <p class="error-page__details-message"><%= exception.message %></p>
+        <pre class="error-page__details-trace"><%= exception.backtrace&.first(20)&.join("\n") %></pre>
+      </details>
+    <% end %>
+  </section>
+</main>
