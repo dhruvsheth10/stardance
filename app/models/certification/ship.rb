@@ -57,6 +57,48 @@ module Certification
       super.merge(for_reviewer(user))
     end
 
+    # Health target for the pending queue. Above this we read as "behind".
+    QUEUE_TARGET = 25
+
+    # Snapshot of queue health for the reviewer dashboard. Counts are global
+    # (every reviewer shares one queue), so this is intentionally not scoped
+    # to the current user the way the listing is.
+    def self.dashboard_stats(now: Time.current)
+      today = now.beginning_of_day
+      approved_count = where(status: :approved).count
+      returned_count = where(status: :returned).count
+      decided_count = approved_count + returned_count
+
+      {
+        pending: where(status: :pending).count,
+        approved: approved_count,
+        returned: returned_count,
+        decided: decided_count,
+        approval_rate: decided_count.zero? ? nil : (approved_count * 100.0 / decided_count).round,
+        decisions_today: where.not(status: :pending).where(decided_at: today..).count,
+        new_today: where(created_at: today..).count,
+        oldest_pending: where(status: :pending).order(created_at: :asc).first,
+        queue_target: QUEUE_TARGET
+      }
+    end
+
+    # Reviewers ranked by completed decisions over a window. Returns rows of
+    # { name:, count: } for :daily, :weekly, or :alltime.
+    def self.leaderboard(period, now: Time.current, limit: 10)
+      scope = where.not(reviewer_id: nil).where.not(status: :pending)
+      case period.to_sym
+      when :daily  then scope = scope.where(decided_at: now.beginning_of_day..)
+      when :weekly then scope = scope.where(decided_at: now.beginning_of_week..)
+      end
+
+      scope.joins(:reviewer)
+           .group("users.display_name")
+           .order(Arel.sql("COUNT(*) DESC"), Arel.sql("users.display_name ASC"))
+           .limit(limit)
+           .count
+           .map { |name, count| { name: name, count: count } }
+    end
+
     before_save :stamp_claimed_at, if: -> { will_save_change_to_reviewer_id? && reviewer_id.present? && claimed_at.nil? }
     before_save :stamp_decided_at, if: -> { will_save_change_to_status? && status_change&.last != "pending" && decided_at.nil? }
     after_save :apply_verdict_to_project!, if: :saved_change_to_status?
