@@ -44,9 +44,11 @@ export default class extends Controller {
     if (atStart && atEnd) {
       mask = "none";
     } else if (atStart) {
-      mask = "linear-gradient(to right, black calc(100% - 56px), transparent 100%)";
+      mask =
+        "linear-gradient(to right, black calc(100% - 56px), transparent 100%)";
     } else if (atEnd) {
-      mask = "linear-gradient(to left, black calc(100% - 56px), transparent 100%)";
+      mask =
+        "linear-gradient(to left, black calc(100% - 56px), transparent 100%)";
     } else {
       mask =
         "linear-gradient(to right, transparent 0%, black 56px, black calc(100% - 56px), transparent 100%)";
