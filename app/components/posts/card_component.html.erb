@@ -38,7 +38,7 @@
 
   <% if body.present? %>
     <div class="feed-post-card__body">
-      <%= helpers.md(body) %>
+      <%= helpers.md(body, allow_images: false) %>
     </div>
   <% end %>
 
