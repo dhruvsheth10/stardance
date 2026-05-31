@@ -9,11 +9,11 @@
         · <%= time_ago_in_words(comment.created_at) %>
       </time>
     </div>
-    <% if current_user && (current_user.id == comment.user_id || current_user.admin?) %>
+    <% if policy(comment).destroy? %>
       <%= button_to devlog_comment_path(comment.commentable, comment),
             method: :delete,
             class: "devlog-comment__delete",
-            form: { data: { turbo_stream: true, turbo_confirm: "Delete this comment?" } },
+            form: { onsubmit: "return confirm('Delete this comment?')" },
             aria: { label: "Delete comment" } do %>
         &times;
       <% end %>

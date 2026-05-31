@@ -95,9 +95,11 @@ module Posts
     end
 
     def comment_url
-      return "#" unless interaction_post&.postable_type == "Post::Devlog" && interaction_post.project.present?
-
-      helpers.project_devlog_path(interaction_post.project, interaction_postable)
+      if interaction_post&.postable_type == "Post::Devlog" && interaction_post.project.present?
+        helpers.project_devlog_path(interaction_post.project, interaction_postable)
+      else
+        "#"
+      end
     end
 
     def comments_count_id
@@ -156,32 +158,40 @@ module Posts
         !current_user.identity_verified?
     end
 
-    # --- Menu helpers ---
-
     def can_edit?
-      current_user.present? && author.present? && current_user.id == author.id
+      action_allowed?(:edit?)
     end
 
     def can_delete?
-      current_user.present? && author.present? && current_user.id == author.id
+      action_allowed?(:destroy?)
     end
 
     def post_url
-      return "#" unless project.present?
-
-      helpers.project_path(project, anchor: helpers.dom_id(post))
+      if project.present?
+        helpers.project_path(project, anchor: helpers.dom_id(post))
+      else
+        "#"
+      end
     end
 
     def edit_url
-      return nil unless devlog? && project.present?
-
-      helpers.edit_project_devlog_path(project, postable)
+      if devlog? && project.present?
+        helpers.edit_project_devlog_path(project, postable)
+      end
     end
 
     def delete_url
-      return nil unless devlog? && project.present?
+      if devlog? && project.present?
+        helpers.project_devlog_path(project, postable)
+      end
+    end
 
-      helpers.project_devlog_path(project, postable)
+    def action_allowed?(action)
+      if current_user.present? && devlog?
+        helpers.policy(postable).public_send(action)
+      else
+        false
+      end
     end
   end
 end

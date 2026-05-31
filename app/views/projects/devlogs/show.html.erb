@@ -3,7 +3,7 @@
 <div class="app-layout">
   <main class="app-layout__main devlog-detail" aria-label="Devlog">
     <nav class="devlog-detail__back" aria-label="Back">
-      <%= link_to project_path(@project), class: "devlog-detail__back-link", data: { turbo: true } do %>
+      <%= link_to project_path(@project), class: "devlog-detail__back-link" do %>
         <%= inline_svg_tag "icons/chevron-down.svg", class: "devlog-detail__back-arrow", aria: { hidden: true } %>
         <span>Back to <%= @project.title %></span>
       <% end %>
@@ -27,18 +27,16 @@
           </h3>
         </header>
 
-        <div id="devlog_comments_<%= @devlog.id %>" class="devlog-detail__comments-list">
+        <div class="devlog-detail__comments-list">
           <% if @comments.any? %>
-            <% @comments.each do |comment| %>
-              <%= render "comments/comment", comment: comment %>
-            <% end %>
+            <%= render partial: "comments/comment", collection: @comments %>
           <% else %>
             <p class="devlog-detail__empty">No comments yet. Be the first!</p>
           <% end %>
         </div>
 
         <% if current_user %>
-          <%= form_with url: devlog_comments_path(@devlog), scope: :comment, class: "devlog-detail__comment-form", data: { turbo_stream: true } do |f| %>
+          <%= form_with url: devlog_comments_path(@devlog), scope: :comment, class: "devlog-detail__comment-form", local: true do |f| %>
             <div class="devlog-detail__comment-input-row">
               <%= image_tag current_user.avatar, alt: "", class: "devlog-detail__comment-avatar" %>
               <%= f.text_area :body,
@@ -53,8 +51,7 @@
                     text: "Comment",
                     size: :small,
                     type: :submit,
-                    variant: :primary,
-                    disable_with: "Posting..."
+                    variant: :primary
                   ) %>
             </div>
           <% end %>
