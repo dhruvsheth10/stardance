@@ -27,7 +27,9 @@
     font-size: var(--font-size-m);
     width: 100%;
     box-sizing: border-box;
-    transition: border-color 160ms ease, box-shadow 160ms ease;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
 
     &::placeholder {
       color: var(--color-space-text-muted);
@@ -66,7 +68,10 @@
       display: grid;
       place-content: center;
       cursor: pointer;
-      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+      transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        box-shadow 160ms ease;
 
       &:hover {
         border-color: var(--color-border-input-focus);
