@@ -1,8 +1,8 @@
-<% if fullstory_org_id.present? %>
+<% if Rails.env.production? %>
   <script>
     window['_fs_host'] = 'fullstory.com';
     window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
-    window['_fs_org'] = <%= fullstory_org_id.to_json %>;
+    window['_fs_org'] = 'ARN0J';
     window['_fs_namespace'] = 'FS';
     (function(m,n,e,t,l,o,g,y){
       if (e in m) { if (m.console && m.console.log) { m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'); } return; }
