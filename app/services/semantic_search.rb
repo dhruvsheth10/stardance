@@ -26,7 +26,7 @@ module SemanticSearch
     def redis_url = redis_config[:url].presence
 
     def openai_api_key
-      Rails.application.credentials.dig(:openai, :api_key).presence
+      config.openai_api_key.presence
     end
 
     def redis = @redis ||= Redis.new(**redis_client_options)
@@ -139,7 +139,7 @@ module SemanticSearch
         "DIALECT", "2"
       )
 
-      hydrate(raw, viewer: viewer, limit: limit)
+      hydrate(raw, viewer: viewer, limit: limit, query: normalized)
     rescue Redis::BaseError, Faraday::Error, JSON::ParserError => e
       handle_redis_error(:search, empty_results, e) if e.is_a?(Redis::BaseError)
       Rails.logger.warn("SemanticSearch query failed: #{e.class}: #{e.message}")
@@ -209,15 +209,15 @@ module SemanticSearch
       redis_config[:error_handler]&.call(method: method, returning: returning, exception: exception)
     end
 
-    def hydrate(raw, viewer:, limit:)
+    def hydrate(raw, viewer:, limit:, query: nil)
       rows = parse_redis_search(raw)
       grouped = rows.group_by { |row| row["type"] }
       results = empty_results
 
-      results["project"] = hydrate_projects(grouped["project"], limit)
-      results["devlog"] = hydrate_devlogs(grouped["devlog"], viewer, limit)
-      results["ship"] = hydrate_ships(grouped["ship"], viewer, limit)
-      results["user"] = hydrate_users(grouped["user"], viewer, limit)
+      results["project"] = hydrate_projects(grouped["project"], limit, query)
+      results["devlog"] = hydrate_devlogs(grouped["devlog"], viewer, limit, query)
+      results["ship"] = hydrate_ships(grouped["ship"], viewer, limit, query)
+      results["user"] = hydrate_users(grouped["user"], viewer, limit, query)
 
       results
     end
@@ -232,15 +232,16 @@ module SemanticSearch
       end
     end
 
-    def hydrate_projects(rows, limit)
+    def hydrate_projects(rows, limit, query = nil)
       ids = ids_from(rows)
       return [] if ids.empty?
 
       records = Project.not_deleted.where(id: ids).index_by { |project| project.id.to_s }
-      ids.filter_map { |id| records[id]&.then { |project| Document.for(project).to_result } }.first(limit)
+      results = ids.filter_map { |id| records[id]&.then { |project| Document.for(project).to_result } }
+      title_boost(results, query).first(limit)
     end
 
-    def hydrate_devlogs(rows, viewer, limit)
+    def hydrate_devlogs(rows, viewer, limit, query = nil)
       ids = ids_from(rows)
       return [] if ids.empty?
 
@@ -251,10 +252,11 @@ module SemanticSearch
         .includes(:project, :user, :postable)
         .index_by { |post| post.postable_id.to_s }
 
-      ids.filter_map { |id| posts[id]&.then { |post| Document.for(post.postable).to_result } }.first(limit)
+      results = ids.filter_map { |id| posts[id]&.then { |post| Document.for(post.postable).to_result } }
+      title_boost(results, query).first(limit)
     end
 
-    def hydrate_ships(rows, viewer, limit)
+    def hydrate_ships(rows, viewer, limit, query = nil)
       ids = ids_from(rows)
       return [] if ids.empty?
 
@@ -266,10 +268,11 @@ module SemanticSearch
         .includes(:project, :user, :postable)
         .index_by { |post| post.postable_id.to_s }
 
-      ids.filter_map { |id| posts[id]&.then { |post| Document.for(post.postable).to_result } }.first(limit)
+      results = ids.filter_map { |id| posts[id]&.then { |post| Document.for(post.postable).to_result } }
+      title_boost(results, query).first(limit)
     end
 
-    def hydrate_users(rows, viewer, limit)
+    def hydrate_users(rows, viewer, limit, query = nil)
       ids = ids_from(rows)
       return [] if ids.empty?
 
@@ -277,7 +280,15 @@ module SemanticSearch
       scope = scope.where(verification_status: "verified") unless viewer&.admin?
 
       records = scope.index_by { |user| user.id.to_s }
-      ids.filter_map { |id| records[id]&.then { |user| Document.for(user).to_result } }.first(limit)
+      results = ids.filter_map { |id| records[id]&.then { |user| Document.for(user).to_result } }
+      title_boost(results, query).first(limit)
+    end
+
+    def title_boost(results, query)
+      return results if query.blank?
+
+      q = query.downcase
+      results.partition { |r| r[:title].to_s.downcase.include?(q) }.flatten
     end
 
     def ids_from(rows)

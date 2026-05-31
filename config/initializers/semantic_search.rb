@@ -20,6 +20,6 @@ Rails.application.config.x.semantic_search.openai_api_key =
 Rails.application.config.x.semantic_search.embedding_model =
   ENV["SEARCH_EMBEDDING_MODEL"].presence || "text-embedding-3-small"
 Rails.application.config.x.semantic_search.embedding_dimensions =
-  (ENV["SEARCH_EMBEDDING_DIMENSIONS"].presence || 512).to_i
+  (ENV["SEARCH_EMBEDDING_DIMENSIONS"].presence || 1536).to_i
 Rails.application.config.x.semantic_search.result_cache_ttl =
   (ENV["SEARCH_RESULT_CACHE_TTL"].presence || 60).to_i
