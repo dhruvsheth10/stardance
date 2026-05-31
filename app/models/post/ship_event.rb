@@ -49,6 +49,8 @@ class Post::ShipEvent < ApplicationRecord
   MAX_ATTACHMENTS = 4
   ACCEPTED_CONTENT_TYPES = %w[image/jpeg image/png image/webp image/heic image/heif image/gif].freeze
 
+  attr_accessor :uploading_attachments
+
   has_one :project, through: :post
   has_many :project_memberships, through: :project, source: :memberships
   has_many :project_members, through: :project, source: :users
@@ -155,6 +157,8 @@ class Post::ShipEvent < ApplicationRecord
   private
 
   def at_least_one_attachment
+    return if uploading_attachments
+
     errors.add(:attachments, "must include at least one image or video") unless attachments.attached?
   end
 
