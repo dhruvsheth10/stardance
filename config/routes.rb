@@ -455,6 +455,8 @@ Rails.application.routes.draw do
     resource :region, only: [ :update ]
     get "category/:slug", to: "items#category", as: :category
     resources :suggestions, only: [ :create ]
+    post "wishlists/:id", to: "wishlists#create", as: :create_wishlist
+    delete "wishlists/:id", to: "wishlists#destroy", as: :wishlist
   end
 
   # Report Reviews

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_184504) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_045057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -957,6 +957,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_184504) do
     t.index ["user_id"], name: "index_shop_warehouse_packages_on_user_id"
   end
 
+  create_table "shop_wishlists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "shop_item_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["shop_item_id"], name: "index_shop_wishlists_on_shop_item_id"
+    t.index ["user_id", "shop_item_id"], name: "index_shop_wishlists_on_user_id_and_shop_item_id", unique: true
+    t.index ["user_id"], name: "index_shop_wishlists_on_user_id"
+  end
+
   create_table "show_and_tell_attendances", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date"
@@ -1256,6 +1266,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_184504) do
   add_foreign_key "shop_orders", "users", column: "assigned_to_user_id", on_delete: :nullify
   add_foreign_key "shop_suggestions", "users"
   add_foreign_key "shop_warehouse_packages", "users"
+  add_foreign_key "shop_wishlists", "shop_items"
+  add_foreign_key "shop_wishlists", "users"
   add_foreign_key "show_and_tell_attendances", "projects"
   add_foreign_key "show_and_tell_attendances", "users"
   add_foreign_key "show_and_tell_attendances", "users", column: "payout_given_by_id"
