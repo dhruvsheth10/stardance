@@ -146,7 +146,9 @@ class Home::FeedsController < ApplicationController
         projects
       else
         Gorse::ProjectPayload.recommendable_scope(current_user)
-                             .with_banner_priority
+                             .where(deleted_at: nil)
+                             .joins(:banner_attachment)
+                             .includes(banner_attachment: :blob)
                              .limit(6)
       end
   end
