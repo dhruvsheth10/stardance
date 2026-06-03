@@ -346,6 +346,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_03_142640) do
     t.index ["mission_id"], name: "index_mission_guide_variants_on_mission_id"
   end
 
+  
   create_table "mission_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "mission_id", null: false
