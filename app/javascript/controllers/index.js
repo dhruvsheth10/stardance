@@ -211,6 +211,9 @@ application.register("slack-doodle", SlackDoodleController);
 import ShopWishlistController from "./shop_wishlist_controller";
 application.register("shop-wishlist", ShopWishlistController);
 
+import ShopWishlistRailController from "./shop_wishlist_rail_controller";
+application.register("shop-wishlist-rail", ShopWishlistRailController);
+
 import SidebarActiveController from "./sidebar_active_controller";
 application.register("sidebar-active", SidebarActiveController);
 
