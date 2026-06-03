@@ -77,11 +77,15 @@ export default class extends Controller {
     document.body.appendChild(toast);
 
     this.toast = toast;
-    requestAnimationFrame(() => toast.classList.add("shop-wishlist-toast--visible"));
+    requestAnimationFrame(() =>
+      toast.classList.add("shop-wishlist-toast--visible"),
+    );
 
     window.setTimeout(() => {
       toast.classList.remove("shop-wishlist-toast--visible");
-      toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+      toast.addEventListener("transitionend", () => toast.remove(), {
+        once: true,
+      });
     }, 2400);
   }
 }
