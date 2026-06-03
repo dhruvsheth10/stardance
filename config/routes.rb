@@ -694,8 +694,8 @@ Rails.application.routes.draw do
         collection do
           get :next
         end
-        member do
-          post :claim
+        scope module: :ships do
+          resource :claim, only: [ :create, :destroy ]
         end
       end
 
